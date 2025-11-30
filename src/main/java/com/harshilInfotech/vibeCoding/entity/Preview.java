@@ -1,5 +1,6 @@
 package com.harshilInfotech.vibeCoding.entity;
 
+import com.harshilInfotech.vibeCoding.enums.PreviewStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,18 +11,21 @@ import java.time.Instant;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class Preview {
 
     Long id;
 
-    String email;
-    String passwordHash;
-    String name;
+    Project project;
 
-    String avatarUrl;
+    String namespace;
+    String podName;
+    String previewUrl;
+
+    PreviewStatus status;
+
+    Instant startedAt;
+    Instant terminatedAt;
 
     Instant createdAt;
-    Instant updatedAt;
-    Instant deletedAt; // safe delete. Not deleting user actually from the database. Just getting rid of deleted User.
 
 }

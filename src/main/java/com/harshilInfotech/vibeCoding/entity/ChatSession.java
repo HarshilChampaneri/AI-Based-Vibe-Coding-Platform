@@ -1,5 +1,6 @@
 package com.harshilInfotech.vibeCoding.entity;
 
+import com.harshilInfotech.vibeCoding.enums.MessageRole;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,18 +11,17 @@ import java.time.Instant;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class ChatSession {
 
-    Long id;
+    Project project;
+    User user;
 
-    String email;
-    String passwordHash;
-    String name;
+    String title;
 
-    String avatarUrl;
+    MessageRole role;
 
     Instant createdAt;
     Instant updatedAt;
-    Instant deletedAt; // safe delete. Not deleting user actually from the database. Just getting rid of deleted User.
+    Instant deletedAt;
 
 }

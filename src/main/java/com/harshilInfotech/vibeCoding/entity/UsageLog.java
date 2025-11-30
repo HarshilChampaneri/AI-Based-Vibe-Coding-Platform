@@ -10,18 +10,19 @@ import java.time.Instant;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class UsageLog {
 
     Long id;
+    User user;
+    Project project;
 
-    String email;
-    String passwordHash;
-    String name;
+    String action;
 
-    String avatarUrl;
+    Integer tokensUsed;
+    Integer durationMs;
+
+    String metaData;
 
     Instant createdAt;
-    Instant updatedAt;
-    Instant deletedAt; // safe delete. Not deleting user actually from the database. Just getting rid of deleted User.
 
 }
