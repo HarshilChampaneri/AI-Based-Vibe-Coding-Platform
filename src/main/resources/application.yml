@@ -2,3 +2,24 @@ spring:
   application:
     name: vibeCoding
     description: This is a Vibe Coding Platform similar to Lovable, Replit etc.
+
+# PostgreSql Database Configurations:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vibe_coding_db
+    username: postgres
+    password: harshil-8705
+    driver-class-name: org.postgresql.Driver
+
+# JPA/Hibernate Configurations:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+# Port Configurations:
+server:
+  port: 9090
