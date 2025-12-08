@@ -37,7 +37,6 @@ public class Project {
     @UpdateTimestamp
     Instant updatedAt;
 
-
     Instant deletedAt; // TODO: Soft Delete Entity
 
 }
