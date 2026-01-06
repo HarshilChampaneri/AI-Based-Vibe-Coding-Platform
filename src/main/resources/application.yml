@@ -22,7 +22,18 @@ spring:
 
 # JWT Configurations:
 jwt:
-  secret-key: kjfhlahflwholwhlfhlzshlfohoreuhkjnlhrsofhsoufhlksjdhlvhoeruyglksjdvluierltyfklsuhfloweuirvhlkwjvnuilwegflksjdjf
+  secret-key: ${JWT_SECRET}
+
+# Stripe Payment Integration Configurations:
+stripe:
+  api:
+    secret: ${STRIPE_API_SECRET}
+  webhook:
+    secret: ${STRIPE_WEBHOOK_SECRET}
+
+# Payment Success Redirect Url Configurations:
+client:
+  url: http://localhost:9090
 
 # Port Configurations:
 server:
