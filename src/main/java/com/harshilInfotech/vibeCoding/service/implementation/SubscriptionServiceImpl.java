@@ -14,7 +14,6 @@ import com.harshilInfotech.vibeCoding.security.AuthUtil;
 import com.harshilInfotech.vibeCoding.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +91,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (cancelAtPeriodEnd != null && cancelAtPeriodEnd != subscription.getCancelAtPeriodEnd()) {
             subscription.setCancelAtPeriodEnd(cancelAtPeriodEnd);
             subscriptionHasBeenUpdated = true;
+
+            if (cancelAtPeriodEnd) {
+                subscription.setStatus(SubscriptionStatus.CANCELED);
+                log.info("Subscription {} marked as Canceled (will end at period end: {})",
+                        gatewaySubscriptionId, periodEnd);
+            }
         }
 
         if (planId != null && planId != subscription.getPlan().getId()) {
@@ -113,8 +118,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void cancelSubscription(String gatewaySubscriptionId) {
 
         Subscription subscription = getSubscription(gatewaySubscriptionId);
-        subscription.setStatus(SubscriptionStatus.CANCELED);
-        subscriptionRepository.save(subscription);
+
+        if (subscription.getStatus() != SubscriptionStatus.CANCELED) {
+            subscription.setStatus(SubscriptionStatus.CANCELED);
+            subscriptionRepository.save(subscription);
+            log.info("Subscription {} has been canceled", gatewaySubscriptionId);
+        } else {
+            log.info("Subscription {} was already marked as CANCELED, now actually deleted from Stripe", gatewaySubscriptionId);
+        }
 
     }
 

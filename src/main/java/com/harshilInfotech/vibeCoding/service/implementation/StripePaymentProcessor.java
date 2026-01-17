@@ -6,6 +6,7 @@ import com.harshilInfotech.vibeCoding.dto.subscription.PortalResponse;
 import com.harshilInfotech.vibeCoding.entity.Plan;
 import com.harshilInfotech.vibeCoding.entity.User;
 import com.harshilInfotech.vibeCoding.enums.SubscriptionStatus;
+import com.harshilInfotech.vibeCoding.error.BadRequestException;
 import com.harshilInfotech.vibeCoding.error.ResourceNotFoundException;
 import com.harshilInfotech.vibeCoding.repository.PlanRepository;
 import com.harshilInfotech.vibeCoding.repository.UserRepository;
@@ -86,7 +87,28 @@ public class StripePaymentProcessor implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal() {
-        return null;
+
+        Long userId = authUtil.getCurrentUserId();
+        User user = getUser(userId);
+        String stripeCustomerId = user.getStripeCustomerId();
+
+        if (stripeCustomerId == null || stripeCustomerId.isEmpty()) {
+            throw new BadRequestException("User does not have a Stripe Customer Id, userId: " + userId);
+        }
+
+        try {
+            var portalSession = com.stripe.model.billingportal.Session.create(
+                    com.stripe.param.billingportal.SessionCreateParams.builder()
+                            .setCustomer(stripeCustomerId)
+                            .setReturnUrl(frontendUrl)
+                            .build()
+            );
+
+            return new PortalResponse(portalSession.getUrl());
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -155,8 +177,6 @@ public class StripePaymentProcessor implements PaymentProcessor {
                 subscription.getCancelAtPeriodEnd(),
                 planId
         );
-
-
 
     }
 
