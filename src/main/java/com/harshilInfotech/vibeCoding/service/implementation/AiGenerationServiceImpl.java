@@ -1,7 +1,7 @@
 package com.harshilInfotech.vibeCoding.service.implementation;
 
 import com.harshilInfotech.vibeCoding.llm.PromptUtils;
-import com.harshilInfotech.vibeCoding.repository.ProjectMemberRepository;
+import com.harshilInfotech.vibeCoding.llm.advisors.FileTreeContextAdvisor;
 import com.harshilInfotech.vibeCoding.security.AuthUtil;
 import com.harshilInfotech.vibeCoding.service.AiGenerationService;
 import com.harshilInfotech.vibeCoding.service.ProjectFileService;
@@ -11,6 +11,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     private final ChatClient chatClient;
     private final AuthUtil authUtil;
     private final ProjectFileService projectFileService;
-    private final ProjectMemberRepository projectMemberRepository;
+    private final FileTreeContextAdvisor fileTreeContextAdvisor;
 
     private static final Pattern FILE_TAG_PATTERN = Pattern.compile("<file path=\"([^\"]+)\">(.*?)</file>", Pattern.DOTALL);
 
@@ -64,6 +65,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
                 .advisors(
                         advisorSpec -> {
                             advisorSpec.params(advisorParams);
+                            advisorSpec.advisors(fileTreeContextAdvisor);
                         }
                 )
                 .stream()
@@ -73,9 +75,15 @@ public class AiGenerationServiceImpl implements AiGenerationService {
                     fullResponseBuffer.append(content);
                 })
                 .doOnComplete(() -> {
-                    Schedulers.boundedElastic().schedule(() -> {
-                        parseAndSaveFiles(fullResponseBuffer.toString(), projectId);
-                    });
+//                    Schedulers.boundedElastic().schedule(() -> {
+//                        parseAndSaveFiles(fullResponseBuffer.toString(), projectId);
+//                    });
+
+                    Mono.fromRunnable(() -> parseAndSaveFiles(fullResponseBuffer.toString(), projectId))
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .doOnError(error -> log.error("Failed to save files for project {}", projectId, error))
+                            .subscribe();
+
                 })
                 .doOnError(error -> log.error("Error during streaming for projectId: {}", projectId))
                 .map(response -> Objects.requireNonNull(response.getResult().getOutput().getText()));

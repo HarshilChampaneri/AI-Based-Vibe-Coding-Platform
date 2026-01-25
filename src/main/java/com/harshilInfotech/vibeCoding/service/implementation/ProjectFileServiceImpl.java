@@ -37,7 +37,7 @@ public class ProjectFileServiceImpl implements ProjectFileService {
     private String projectBucket;
 
     @Override
-    public List<FileNode> getFileTree(Long projectId, Long userId) {
+    public List<FileNode> getFileTree(Long projectId) {
         List<ProjectFile> projectFileList = projectFileRepository.findByProjectId(projectId);
         return projectFileMapper.toListOfFileNode(projectFileList);
     }
@@ -86,8 +86,8 @@ public class ProjectFileServiceImpl implements ProjectFileService {
             log.info("Saved file: {}", objectKey);
 
         } catch (Exception e) {
-            log.error("Failed to save file {}/{}", projectId, cleanPath, e);
-            throw new RuntimeException("File save failed", e);
+            log.error("Failed to save file {}/{}: {}", projectId, cleanPath, e.getMessage(), e);
+            throw new RuntimeException("File save failed for path: " + cleanPath + " - " + e.getMessage(), e);
         }
 
     }
