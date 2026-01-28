@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +31,9 @@ public class CodeGenerationTools {
         List<String> result = new ArrayList<>();
 
         for (String path : paths) {
+
             String classPath = path.startsWith("/") ? path.substring(1) : path;
-
             log.info("Requested file: {}", classPath);
-
             String content = projectFileService.getFileContent(projectId, classPath).content();
 
             result.add(String.format(
