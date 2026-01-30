@@ -24,8 +24,8 @@ public class ChatEvent {
     ChatMessage chatMessage;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    ChatEventType chatEventType;
+    @Column(name = "chat_event_type", nullable = false)
+    ChatEventType type;
 
     @Column(nullable = false)
     Integer sequenceOrder;

@@ -16,9 +16,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@Service
 @RequiredArgsConstructor
+@Service
+@Slf4j
 public class ProjectTemplateServiceImpl implements ProjectTemplateService {
 
     private final MinioClient minioClient;
@@ -26,14 +26,14 @@ public class ProjectTemplateServiceImpl implements ProjectTemplateService {
     private final ProjectRepository projectRepository;
 
     private static final String TEMPLATE_BUCKET = "starter-projects";
-    private static final String TARGET_BUCKET  = "projects";
-    private static final String TEMPLATE_NAME = "react-vite-tailwind-daisyui-starter-main";
+    private static final String TARGET_BUCKET = "projects";
+    private static final String TEMPLATE_NAME = "react-vite-tailwind-daisyui-starter";
+
 
     @Override
     public void initializeProjectFromTemplate(Long projectId) {
-
-        Project project = projectRepository.findById(projectId).orElseThrow(() ->
-                new ResourceNotFoundException("Project", projectId.toString()));
+        Project project = projectRepository.findById(projectId).orElseThrow(
+                () -> new ResourceNotFoundException("Project", projectId.toString()));
 
         try {
             Iterable<Result<Item>> results = minioClient.listObjects(
