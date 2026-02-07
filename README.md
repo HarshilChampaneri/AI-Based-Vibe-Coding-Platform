@@ -24,6 +24,7 @@ mvn spring-boot:run
 # Clone the repository
 git clone https://github.com/HarshilChampaneri/AI-Powered-Vibe-Coding-SaaS-Platform-Frontend
 cd project-companion
+
 # Install dependencies
 npm install
 
